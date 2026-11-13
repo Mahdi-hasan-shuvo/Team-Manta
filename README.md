@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Astra Vigil 2.0 - showcase website (Team MANTA)
 
 A bilingual (English / বাংলা), animated showcase site for **Astra Vigil 2.0**, our
@@ -170,3 +171,7 @@ pytest -q
 
 Code: Apache-2.0 (`LICENSE`). Fonts: SIL OFL 1.1 (`frontend/fonts/LICENSE-*`). Three.js: MIT (`frontend/vendor/three.LICENSE`).
 NASA data remains NASA's. Crew, callsigns and telemetry are fictional.
+=======
+# Team-Manta
+NASA Space Apps Challenge 2026 entry (Health Monitoring Software for Astronauts). It has a real backend: every demo on the page calls the same deterministic detector the console uses
+>>>>>>> a144b302ef4658c9ee2b9cfd5909030e4c3667a9

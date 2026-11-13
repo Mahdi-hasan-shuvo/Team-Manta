@@ -1,0 +1,49 @@
+{
+ "meta": {
+  "description": "Data the project uses that is not an OSDR/NTRS/paper record: the simulated crew, the Mars light-time numbers, and the planned space-weather feed."
+ },
+ "items": [
+  {
+   "id": "SIM-CREW-600",
+   "kind": "other",
+   "title": "Simulated crew fixture: 4 fictional astronauts, 600 mission days each, six daily signals",
+   "provider": "Team MANTA (synthetic)",
+   "date": "2026",
+   "status": "simulated",
+   "url": "",
+   "summary": "Generated from a noise model with planted events (for example the commander's HRV drop on days 250 and 251). It is not astronaut data. Every chart and demo on this site runs on it.",
+   "used_for": [
+    "detector",
+    "playground",
+    "privacy tiers"
+   ]
+  },
+  {
+   "id": "NTRS-20160011483",
+   "kind": "other",
+   "title": "NASA delay-tolerant networking slides: Mars one-way light times (3.04, 12.51 and 22.29 minutes)",
+   "provider": "NASA NTRS",
+   "date": "2016",
+   "status": "quoted in code",
+   "url": "https://ntrs.nasa.gov/citations/20160011483",
+   "summary": "The source of the near, average and far Mars presets in the Earth link and the 3D mission view. The numbers are quoted, not fetched.",
+   "used_for": [
+    "Earth link",
+    "3D mission view"
+   ]
+  },
+  {
+   "id": "DONKI",
+   "kind": "other",
+   "title": "NASA DONKI space-weather database (flares, geomagnetic storms, coronal mass ejections)",
+   "provider": "NASA",
+   "date": "",
+   "status": "planned, cache empty",
+   "url": "https://api.nasa.gov/DONKI/FLR",
+   "summary": "Sync code is written and tested against mock responses only. The cache is empty in this build and needs a free key from api.nasa.gov.",
+   "used_for": [
+    "cabin-radiation context (planned)"
+   ]
+  }
+ ]
+}

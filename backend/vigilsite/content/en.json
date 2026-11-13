@@ -1,0 +1,1721 @@
+{
+  "meta": {
+    "title": "Astra Vigil 2.0 | Team MANTA",
+    "description": "Astra Vigil 2.0 is an offline crew health console for deep-space missions. It compares each astronaut with their own baseline, flags drift early and cites NASA research. Team MANTA, NASA Space Apps Challenge 2026."
+  },
+  "ui": {
+    "brand_sub": "Team MANTA",
+    "nav": {
+      "problems": "Problems",
+      "explore": "Solar system",
+      "orbit": "Mission 3D",
+      "detector": "Detector",
+      "architecture": "Architecture",
+      "privacy": "Privacy",
+      "link": "Earth link",
+      "hub": "NASA APIs",
+      "video": "Videos",
+      "nasa": "Datasets",
+      "console": "Console",
+      "hardware": "Hardware",
+      "build": "Technical",
+      "limits": "Limits",
+      "team": "Team",
+      "updates": "What changed"
+    },
+    "skip": "Skip to content",
+    "menu": "Menu",
+    "close": "Close",
+    "theme": {
+      "to_light": "Switch to light theme",
+      "to_dark": "Switch to dark theme"
+    },
+    "lang_switch": "বাংলা",
+    "lang_switch_label": "Switch to Bangla",
+    "simulated": "Simulated data",
+    "loading": "Loading…",
+    "error": "Could not reach the site backend. Start it with python run.py and reload.",
+    "retry": "Try again",
+    "back_to_top": "Back to top",
+    "status": {
+      "learning": "Learning",
+      "normal": "Normal",
+      "watch": "Watch",
+      "alert": "Alert"
+    },
+    "alert_line": "{signal} is {sd} SD {dir} this person's own {win}-day baseline (now {cur} {unit}, baseline {mean} ± {bsd}).",
+    "dir_above": "above",
+    "dir_below": "below",
+    "rule_fired": "Rule fired: {rule}. No diagnosis is made."
+  },
+  "journey": {
+    "galaxy": {
+      "t": "The Milky Way",
+      "s": "Roughly 100,000 light-years across"
+    },
+    "arm": {
+      "t": "The Sun's neighbourhood",
+      "s": "About 26,000 light-years from the centre"
+    },
+    "system": {
+      "t": "The Solar System",
+      "s": "One star, eight planets"
+    },
+    "inner": {
+      "t": "The inner planets",
+      "s": "Mercury, Venus, Earth, Mars"
+    },
+    "earth": {
+      "t": "Earth",
+      "s": "Home, and where the crew's data goes"
+    },
+    "mars": {
+      "t": "Mars",
+      "s": "3 to 22 light-minutes from Earth"
+    }
+  },
+  "hero": {
+    "title": "Astra Vigil 2.0",
+    "tagline": "A quiet watch over crew health when Earth is too far to answer.",
+    "sub": "Astra Vigil compares each astronaut with their own normal, flags drift while it is still small, and points to the NASA research behind the signal. It runs offline, never diagnoses, and keeps raw data with its owner.",
+    "cta_primary": "Try the detector",
+    "cta_secondary": "See how it is built",
+    "chips": [
+      "Team MANTA",
+      "NASA Space Apps Challenge 2026",
+      "Health and life support"
+    ],
+    "trace": {
+      "caption": "Live replay of the real detector. Simulated commander, HRV.",
+      "baseline": "Personal baseline, plus or minus 2 SD",
+      "reading": "Daily HRV",
+      "fires": "Day {day}: second day below the band, Rule S fires",
+      "nodiag": "No diagnosis is made.",
+      "replay": "Replay",
+      "pause": "Pause",
+      "play": "Play",
+      "aria": "Line chart of a simulated commander's daily HRV. On day {day} the value falls below the personal baseline band for the second day running and Rule S raises an alert."
+    }
+  },
+  "challenge": {
+    "title": "The challenge",
+    "body": "NASA Space Apps Challenge 2026 asks for health monitoring software for astronauts. A crew on a long mission cannot wait for a flight surgeon on Earth, so the software has to notice change on board, explain it carefully and respect the people it watches.",
+    "asks": [
+      {
+        "k": "Vitals stream",
+        "v": "A console that replays crew vitals as they arrive."
+      },
+      {
+        "k": "Anomaly detection",
+        "v": "Deterministic rules against each person's own baseline, in a compute module with no language model."
+      },
+      {
+        "k": "Explanation",
+        "v": "Each alert cites related NASA OSDR and NTRS records and never diagnoses."
+      },
+      {
+        "k": "Test data",
+        "v": "A 600-row simulated fixture with planted anomalies."
+      },
+      {
+        "k": "Open source",
+        "v": "Apache-2.0 repository and a README that says the telemetry is simulated."
+      }
+    ]
+  },
+  "problems": {
+    "title": "Five problems, answered honestly",
+    "intro": "We split the challenge into five problems. For each one, this page says what the prototype does, where in the code it lives and what it does not do.",
+    "pick": "Choose a problem",
+    "status": {
+      "core": "Built and tested",
+      "stretch": "Stretch goal"
+    },
+    "labels": {
+      "how": "What the prototype does",
+      "limit": "What it does not do",
+      "where": "Where it lives"
+    },
+    "items": [
+      {
+        "id": "delay",
+        "name": "Communication delay",
+        "status": "core",
+        "short": "Earth cannot answer in time, so the ship has to watch for itself.",
+        "how": "All detection runs on board. Only a coarse status (learning, normal, watch or alert) enters a store-and-forward outbox, and the outbox releases it after the light-time delay.",
+        "limit": "The delay is modelled, not measured on a real link. Presets use Mars one-way light times from NASA delay-tolerant networking slides, 3.04 to 22.29 minutes.",
+        "where": "store.py outbox, /api/link"
+      },
+      {
+        "id": "detect",
+        "name": "Real-time detection",
+        "status": "core",
+        "short": "Catch drift on the day it happens, not in the post-flight report.",
+        "how": "Each day's reading is compared with that person's own 30-day baseline. Rule S and Rule M fire with the exact numbers behind them. There is no machine learning in this path.",
+        "limit": "Tested on simulated data only. Real physiology is messier than our noise model, and a slow drift can hide inside the baseline. Try the Ramp shape in the playground.",
+        "where": "compute/detect.py"
+      },
+      {
+        "id": "team",
+        "name": "Team-level early warning",
+        "status": "stretch",
+        "short": "Notice when several crew members move together.",
+        "how": "The commander view shows coarse status for the whole crew in one place, and every person's status is computed the same way.",
+        "limit": "We make no accuracy claim for crew-wide warning. A shared cause, such as cabin air, is not modelled yet.",
+        "where": "engine.py, commander view"
+      },
+      {
+        "id": "privacy",
+        "name": "Privacy versus monitoring",
+        "status": "core",
+        "short": "Safety needs data. Dignity needs limits.",
+        "how": "Three tiers are enforced on the server. Raw data stays with its owner, the medical designee sees trend direction only with consent, and the commander and ground see coarse status. Every access goes into a hash-chained audit log.",
+        "limit": "The audit chain exposes edits but cannot stop someone with full file access from deleting it all. A real system needs hardware-backed keys.",
+        "where": "privacy.py, store.py"
+      },
+      {
+        "id": "crisis",
+        "name": "Crisis prevention",
+        "status": "core",
+        "short": "Early detection, not prediction.",
+        "how": "Alerts arrive while a change is still small, about one day after onset in our tests, together with the NASA records linked to that signal. We never forecast an event.",
+        "limit": "An alert is a prompt to look, not a finding. We do not claim to predict emergencies.",
+        "where": "evidence.py, explain.py"
+      }
+    ]
+  },
+  "explore": {
+    "title": "Fly through the Solar System",
+    "intro": "Pick a planet and fly to it. Spin the view, speed up time, and read the numbers that matter for a crew: distance, gravity, day length and radio delay. On a phone you can look around with the gyroscope or drop it into a Cardboard-style viewer. With a headset, enter VR.",
+    "aria": "Interactive 3D model of the Solar System. Drag to rotate, use the zoom buttons or pinch to zoom, and pick a body from the list below.",
+    "pick": "Choose a body",
+    "hint_drag": "Drag to rotate. Zoom with + and − or pinch. Sizes and distances are compressed.",
+    "hint_look": "Drag to look around.",
+    "hint_gyro": "Turn your phone to look around.",
+    "hint_cardboard": "Put the phone in the viewer. Double-tap to leave.",
+    "exit": "Exit",
+    "no_webgl": "This browser cannot draw the 3D view (WebGL is off). The list and the facts still work.",
+    "orbits": "Orbits",
+    "labels": "Names",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out",
+    "reset": "Reset",
+    "speed": "Time speed",
+    "speed_out": "1 second = {d} days · an Earth year takes {y} s",
+    "modes": "Look around",
+    "look": "Look around (phone)",
+    "cardboard": "Phone VR (Cardboard)",
+    "full": "Full screen",
+    "vr": "Headset VR",
+    "vr_checking": "Looking for a VR headset…",
+    "vr_none": "No VR headset detected in this browser. Phone VR and look-around still work.",
+    "vr_ready": "Headset detected. Press Headset VR to enter.",
+    "vr_starting": "Starting VR…",
+    "vr_failed": "Could not start VR: {msg}",
+    "vr_hint": "In VR, press the trigger to move to the next body.",
+    "touch_on": "Touch controls the scene",
+    "touch_off": "Touch scrolls the page",
+    "crew_label": "For a crew:",
+    "retro": "(spins backwards)",
+    "note": "Sizes and distances are compressed so every body stays visible; they are not to scale. Orbit periods and the facts are real (NASA planetary fact sheets, rounded). Surfaces are drawn in code, not photographs. The VR modes follow the WebXR and Cardboard conventions but were not tested on a real headset or viewer in this build.",
+    "u": {
+      "km": "km",
+      "mkm": "million km",
+      "au": "AU",
+      "days": "days",
+      "years": "years",
+      "hours": "h",
+      "g": "g",
+      "c": "°C"
+    },
+    "f": {
+      "diam": "Diameter",
+      "dist": "Distance from the Sun (mean)",
+      "dist_earth": "Distance from Earth (mean)",
+      "year": "Orbit period (year)",
+      "orbit_earth": "Orbit around Earth",
+      "day": "Day length (one turn)",
+      "gravity": "Surface gravity",
+      "temp": "Mean temperature",
+      "temp_surface": "Surface temperature (photosphere)"
+    },
+    "bodies": {
+      "system": {
+        "name": "Whole system",
+        "type": "Eight planets, one star",
+        "blurb": "Every orbit is drawn on one plane and every planet moves at its true relative pace. Pick a body to fly to it.",
+        "crew": "A crew's world grows with every step out: the Moon is seconds away by radio, Mars minutes, Saturn more than an hour."
+      },
+      "sun": {
+        "name": "Sun",
+        "type": "Star",
+        "blurb": "Holds more than 99% of the Solar System's mass.",
+        "crew": "Flares and energetic particles from the Sun are a main radiation concern on deep-space trips. NASA's DONKI service logs them."
+      },
+      "mercury": {
+        "name": "Mercury",
+        "type": "Rocky planet",
+        "blurb": "The smallest planet and the closest to the Sun, with a very long day: one turn takes about 59 Earth days.",
+        "crew": "Sunlight is about seven times stronger than at Earth, so heat control would be the main challenge."
+      },
+      "venus": {
+        "name": "Venus",
+        "type": "Rocky planet",
+        "blurb": "A thick carbon-dioxide atmosphere traps heat. It is the hottest planet and spins backwards, very slowly.",
+        "crew": "Surface temperatures near 464 °C and crushing air pressure rule out landing. A crew would stay in orbit."
+      },
+      "earth": {
+        "name": "Earth",
+        "type": "Home",
+        "blurb": "The only place known to host life. Its magnetic field and atmosphere shield everything on the ground.",
+        "crew": "Crews in low Earth orbit are still partly shielded by Earth's magnetic field. Beyond it, that help is gone."
+      },
+      "moon": {
+        "name": "Moon",
+        "type": "Earth's moon",
+        "blurb": "Always shows the same face to Earth. Radio signals take about 1.3 seconds each way.",
+        "crew": "The proving ground for Artemis: close enough for near-real-time help, far enough to practise living away from home."
+      },
+      "mars": {
+        "name": "Mars",
+        "type": "Rocky planet",
+        "blurb": "A cold, dry world with a thin atmosphere, about half Earth's width.",
+        "crew": "One-way radio takes 3 to 22 minutes, gravity is about 0.38 g and the thin air gives little radiation shielding. That is why crew health tools must work without Earth."
+      },
+      "jupiter": {
+        "name": "Jupiter",
+        "type": "Gas giant",
+        "blurb": "The largest planet. Its Great Red Spot is a storm that has been seen for well over a century.",
+        "crew": "Its radiation belts are intense, so even robot probes need heavy shielding."
+      },
+      "saturn": {
+        "name": "Saturn",
+        "type": "Gas giant",
+        "blurb": "Famous for its wide ring system, made mostly of water-ice particles.",
+        "crew": "One-way radio takes more than an hour even at the closest approach, so a crew there would make every decision alone."
+      },
+      "uranus": {
+        "name": "Uranus",
+        "type": "Ice giant",
+        "blurb": "Tipped on its side, so each pole gets about 42 years of sunlight and then 42 years of darkness.",
+        "crew": "Radio takes more than two hours one way."
+      },
+      "neptune": {
+        "name": "Neptune",
+        "type": "Ice giant",
+        "blurb": "The farthest planet, with the fastest winds measured in the Solar System.",
+        "crew": "Radio takes about four hours one way at best."
+      }
+    }
+  },
+  "orbit": {
+    "title": "Mission 3D: from the station to Mars and back",
+    "intro": "Five views on one 3D stage. Fly the route from the space station to Mars, watch a 44-minute question-and-answer, meet the simulated crew, compare a ship with and without the software, and look inside the ship. Drag to turn the view. Light times are real; distances are compressed.",
+    "aria": "Interactive 3D mission theatre with five views: the journey from the space station to Mars, the 44-minute round trip, the crew, a with-and-without-software comparison and the inside of the ship. Drag to rotate. Use the tabs and sliders to change the view.",
+    "mars": "Mars",
+    "ship": "Spacecraft near Mars",
+    "million_km": "million km",
+    "dist_label": "Earth to Mars, in light time",
+    "real_km": "Distance",
+    "send": "Send a status packet",
+    "ask": "Ask Earth a question",
+    "reset": "Reset view",
+    "hud_idle": "Ready. Send a status packet, or ask Earth a question and wait for the answer.",
+    "hud_flight": "Status in flight: {done} of {total} (real light time, mm:ss)",
+    "hud_ask_flight": "Question and answer in flight: {done} of {total} (real light time, mm:ss)",
+    "hud_arrived": "Earth has the status {real} min after it left the ship.",
+    "hud_q": "Question sent. The answer cannot be back sooner than {rt} min (real).",
+    "hud_a": "Answer back after {rt} min (real light time). The crew had to decide alone in the meantime.",
+    "drag_hint": "Drag to rotate, or use the arrow keys. Not to scale: distances are compressed, light times are real.",
+    "no_webgl": "This browser cannot draw the 3D view (WebGL is off). The controls still show the real numbers.",
+    "note": "Light times come from NASA delay-tolerant networking slides (NTRS 20160011483). The 3D picture compresses distances and is not to scale. The demo clock divides real time by the demo speed.",
+    "takeaway": "Ask Earth a question and the crew waits {rt} minutes for the answer. Astra Vigil decides on board and sends only a coarse status."
+  },
+  "detector": {
+    "title": "How the detector decides",
+    "intro": "The science boundary of the project is one small Python file. It contains no language model and no hidden state. These are its steps, in order.",
+    "steps": [
+      {
+        "title": "Collect one summary per day",
+        "body": "Each row is one mission-day summary of six signals: resting heart rate, HRV, SpO2, sleep, core temperature and exercise. The demo replays 1 to 60 rows per second."
+      },
+      {
+        "title": "Build a personal baseline",
+        "body": "The baseline is the last 30 usable days for that person and signal. At least 14 are needed. Until then the status is learning."
+      },
+      {
+        "title": "Score today against it",
+        "body": "z = (today minus baseline mean) divided by baseline SD, with a minimum SD per signal so a very steady baseline cannot create absurd scores. Only the worse direction counts: heart rate and temperature up, HRV, SpO2, sleep and exercise down."
+      },
+      {
+        "title": "Apply two rules",
+        "body": "Rule S: one signal at least 2.0 SD worse on 2 days in a row. Rule M: at least 2 different signals at least 2.5 SD worse within 48 hours, raised once when the pattern appears."
+      },
+      {
+        "title": "Keep the baseline honest",
+        "body": "Days inside a confirmed episode are left out of the baseline, so a long problem cannot become the new normal. One-off blips stay in, because removing them made false alarms worse in our tests."
+      },
+      {
+        "title": "Explain, never diagnose",
+        "body": "An alert shows its rule and numbers. The text comes from a template. An optional local language model may reword it, and its text is discarded if it uses diagnostic words or numbers that are not in the alert."
+      },
+      {
+        "title": "Attach NASA context",
+        "body": "Cached OSDR and NTRS records related to the signal appear as reading material, not as proof."
+      }
+    ],
+    "signals_title": "Six signals and their worse direction",
+    "worse": {
+      "high": "worse when higher",
+      "low": "worse when lower"
+    },
+    "validation": {
+      "title": "What we measured",
+      "intro": "{runs} simulated 600-day runs with nothing planted, then {runs} runs for each planted event. Generated by tools/montecarlo.py, so you can repeat it.",
+      "rows": [
+        {
+          "id": "fa_single",
+          "label": "Rule S chance alerts",
+          "unit": "per 1000 crew-days"
+        },
+        {
+          "id": "fa_multi",
+          "label": "Rule M chance alerts",
+          "unit": "per 1000 crew-days"
+        },
+        {
+          "id": "det_single",
+          "label": "Two-day HRV drop of 3.5 SD, caught",
+          "unit": "of runs"
+        },
+        {
+          "id": "det_multi",
+          "label": "Three-day shift of 3.5 SD in three signals, caught",
+          "unit": "of runs"
+        },
+        {
+          "id": "delay_single",
+          "label": "Average delay, Rule S",
+          "unit": "days after onset"
+        },
+        {
+          "id": "delay_multi",
+          "label": "Average delay, Rule M",
+          "unit": "days after onset"
+        }
+      ],
+      "caveat": "These numbers describe this detector on Gaussian noise with a mild day-to-day link. They say nothing yet about real astronauts. A false alarm every 40 days per person is also a cost: alerts are meant to be looked at, not trusted blindly."
+    }
+  },
+  "playground": {
+    "title": "Try the real detector",
+    "intro": "Choose a signal and inject a change into one simulated person. The chart below is computed by the same Python detector the console uses, not by JavaScript.",
+    "signal": "Signal",
+    "size": "Size of the change",
+    "size_unit": "SD",
+    "days": "Days it lasts",
+    "shape": "Shape",
+    "step": "Step",
+    "ramp": "Ramp",
+    "shape_hint": "Step jumps at once. Ramp grows slowly over the whole period.",
+    "person": "Simulated person",
+    "run": "Run detector",
+    "random": "New person",
+    "series": "Daily value",
+    "baseline": "Personal baseline and band",
+    "injected": "Injected change",
+    "alert": "Alert",
+    "caught": "Caught on day {day}, {delay} days after the change began.",
+    "caught_same": "Caught on day {day}, the day the change began.",
+    "missed": "Not caught. The change was too small, too short or too slow for the rules.",
+    "ramp_note": "Slow drifts are the known weak spot: the baseline follows the signal down before the rules see a gap.",
+    "chance": "Other alerts in these 120 days: {n}. Normal noise crosses the line sometimes.",
+    "alerts_title": "Alerts raised",
+    "none": "No alerts were raised.",
+    "aria": "Line chart of one simulated person's daily values with the personal baseline band and any alerts the detector raised."
+  },
+  "architecture": {
+    "title": "System architecture",
+    "intro": "Three layers: sense, think, act. Data flows left to right and every box is a real module in the repository. Select a box to read what it does.",
+    "layers": [
+      {
+        "id": "sense",
+        "name": "Sense",
+        "blurb": "Where numbers come from",
+        "nodes": [
+          {
+            "id": "wear",
+            "name": "Wearables",
+            "short": "Chest strap and wrist device",
+            "detail": "In the hardware prototype a Polar H10 chest strap supplies heart rate and HRV and a wrist wearable supplies sleep and SpO2 trends. These are design choices, not tested together yet.",
+            "file": "hardware plan"
+          },
+          {
+            "id": "cabin",
+            "name": "Cabin nodes",
+            "short": "ESP32 with CO2 and climate sensors",
+            "detail": "ESP32 boards with an SCD40 (CO2) and a BME280 (temperature, humidity, pressure) publish over MQTT on an offline router. They give context for a crew-wide cause. The detector does not use them yet.",
+            "file": "hardware plan"
+          },
+          {
+            "id": "fixture",
+            "name": "Fixture replay",
+            "short": "Six crew (Team MANTA), 600 days each",
+            "detail": "The software demo reads simulated mission-day rows for six crew members, with known planted events, so detection can be scored against ground truth. Names and photos are the team's. Every vital is simulated and every row is marked simulated.",
+            "file": "demo_fixtures/crew.json"
+          },
+          {
+            "id": "csv",
+            "name": "CSV import",
+            "short": "Bring your own simulated data",
+            "detail": "A command-line tool turns a CSV into a fixture and rejects values outside plausible ranges, for example SpO2 below 70 or heart rate above 220.",
+            "file": "tools/import_csv.py"
+          }
+        ]
+      },
+      {
+        "id": "core",
+        "name": "Vigil Core",
+        "blurb": "Everything that decides, on board",
+        "nodes": [
+          {
+            "id": "engine",
+            "name": "Mission engine",
+            "short": "Replays days, keeps state",
+            "detail": "Steps each crew member's data one day at a time, records baseline and score for every signal, and can rebuild any day deterministically.",
+            "file": "engine.py"
+          },
+          {
+            "id": "detector",
+            "name": "Detector",
+            "short": "Rule S and Rule M",
+            "detail": "Personal baseline, z-score, two rules and baseline exclusion. Pure Python and NumPy. No network, no model.",
+            "file": "compute/detect.py"
+          },
+          {
+            "id": "evidence",
+            "name": "Evidence mapper",
+            "short": "Signal to NASA records",
+            "detail": "Maps a signal and direction to cached OSDR, NTRS and paper records and labels each as direct or adjacent. Works with no network.",
+            "file": "evidence.py"
+          },
+          {
+            "id": "explainer",
+            "name": "Explainer and guard",
+            "short": "Template text, optional local model",
+            "detail": "A template always produces the explanation. A local model, if you run one, may reword it, but the guard rejects diagnostic language and numbers that are not in the alert.",
+            "file": "explain.py, compute/guard.py"
+          },
+          {
+            "id": "projector",
+            "name": "Privacy projector",
+            "short": "Decides who sees what",
+            "detail": "Builds a different view of the same moment for each role and checks consent. Raw values never leave the crew member's tier.",
+            "file": "privacy.py"
+          },
+          {
+            "id": "outbox",
+            "name": "Outbox",
+            "short": "Store and forward to Earth",
+            "detail": "Holds coarse status until the light-time delay has passed. A schema check refuses any payload with fields outside the allow-list.",
+            "file": "store.py"
+          },
+          {
+            "id": "audit",
+            "name": "Audit log",
+            "short": "Hash-chained history",
+            "detail": "Each entry includes the hash of the one before it, so editing or deleting an entry breaks verification. Also holds consent records.",
+            "file": "store.py"
+          }
+        ]
+      },
+      {
+        "id": "act",
+        "name": "Act",
+        "blurb": "Who sees the result",
+        "nodes": [
+          {
+            "id": "crew",
+            "name": "Crew console",
+            "short": "Tier 0, raw data",
+            "detail": "The crew member sees their own values, baselines, alerts and explanations with NASA references.",
+            "file": "web/ (console)"
+          },
+          {
+            "id": "medical",
+            "name": "Medical designee",
+            "short": "Tier 1, trends with consent",
+            "detail": "Sees only trend direction per signal, such as drifting toward worse, and only for crew who consented.",
+            "file": "privacy.py"
+          },
+          {
+            "id": "commander",
+            "name": "Commander",
+            "short": "Tier 2, live status",
+            "detail": "Sees coarse status for everyone in real time: learning, normal, watch or alert.",
+            "file": "privacy.py"
+          },
+          {
+            "id": "ground",
+            "name": "Ground",
+            "short": "Tier 2, delayed",
+            "detail": "Receives the same coarse status through the outbox after the light-time delay.",
+            "file": "store.py"
+          }
+        ]
+      }
+    ],
+    "transport": "FastAPI serves REST and WebSocket on the local machine. The console is plain JavaScript on canvas, with no framework and no CDN.",
+    "open_file": "Where it lives",
+    "pick_hint": "Select a box to see the details."
+  },
+  "privacy": {
+    "title": "Privacy tiers, enforced by the server",
+    "intro": "Same mission day, four different views. Switch the viewer and watch what disappears. Day 251 is when the simulated commander's HRV drops.",
+    "roles": {
+      "crew": "Crew member",
+      "medical": "Medical designee",
+      "commander": "Commander",
+      "ground": "Ground (Earth)"
+    },
+    "tier": "Tier {n}",
+    "consent": "The crew member consents to share trends with the medical designee",
+    "denied": "Access denied. There is no consent on record, so the server returns nothing.",
+    "values": "Values today",
+    "status": "Status",
+    "alerts_today": "Alert text",
+    "trend": {
+      "worse": "drifting toward worse",
+      "better": "drifting toward better",
+      "steady": "steady",
+      "learning": "learning baseline"
+    },
+    "crew_status": "Crew status",
+    "arrives": "Arrives on Earth in {min} minutes (real light time)",
+    "outbox_ok": "Outbox schema check: accepted",
+    "no_alert": "No alert today.",
+    "audit": {
+      "title": "Tamper-evident audit log",
+      "body": "Each line holds the hash of the line before it. Change any field below and verify: the chain breaks at the first edited line.",
+      "edit": "Edit the action of line 3",
+      "verify": "Verify chain",
+      "reset": "Restore original",
+      "valid": "Chain valid. {n} entries.",
+      "broken": "Chain broken at entry {i}. Everything after it is untrusted.",
+      "col_actor": "Actor",
+      "col_action": "Action",
+      "col_hash": "Hash"
+    },
+    "can_see": {
+      "crew": "Raw values, baselines and full explanations",
+      "medical": "Trend direction only, and only with consent",
+      "commander": "Coarse status for everyone, live",
+      "ground": "Coarse status only, after the light-time delay"
+    },
+    "worse_sd": "Deviation in the worse direction (SD)",
+    "subject": "Mission day {day}, simulated commander Niloy",
+    "payload": "Payload that leaves the ship"
+  },
+  "link": {
+    "title": "The Earth link",
+    "intro": "Light needs minutes to cross the gap to Mars, so a question to Earth gets its answer far too late. The ship decides alone and sends Earth a thin status.",
+    "presets": {
+      "mars_near": "Mars, closest",
+      "mars_mean": "Mars, average",
+      "mars_far": "Mars, farthest"
+    },
+    "distance": "Distance",
+    "owlt": "One-way light time",
+    "min": "min",
+    "accel": "Demo speed",
+    "one_way_demo": "One way in this demo",
+    "round_trip_real": "Real round trip",
+    "seconds": "s",
+    "ship": "Spacecraft",
+    "earth": "Earth",
+    "send": "Send status",
+    "queued": "Queued in outbox",
+    "in_flight": "In flight",
+    "delivered": "Delivered",
+    "check_title": "What may leave the ship",
+    "check_intro": "The outbox accepts only day, ts and crew with id and status. Edit the payload and check it. Try adding a heart rate.",
+    "check_btn": "Check payload",
+    "accepted": "Accepted. This payload may leave the ship.",
+    "rejected": "Rejected by the outbox:",
+    "note": "Real light time is shown. The demo divides it by the speed so you can watch it.",
+    "outbox": "Outbox",
+    "arrives_in": "Arrives in {s} s"
+  },
+  "hub": {
+    "title": "NASA health data APIs",
+    "intro": "Crew health starts with NASA's own data: biology from spaceflight, research papers, space radiation, and the air and heat conditions on Earth. These are the NASA services we use or could use, each with a live fetch. Our server makes the request, and every answer says whether it is live, cached or unavailable.",
+    "banner": "Requests go from this site's server to NASA, only when you press Fetch. Your browser never contacts NASA.",
+    "banner_off": "Offline mode is on (VIGIL_OFFLINE). Nothing is sent to NASA. Answers come from cached records only.",
+    "cat": {
+      "biology": "Crew biology",
+      "literature": "Research papers",
+      "radiation": "Space radiation",
+      "earth": "Earth and environment",
+      "media": "Images and video",
+      "link": "Earth-space link"
+    },
+    "apis": {
+      "osdr_search": {
+        "name": "OSDR study search",
+        "what": "Search NASA's Open Science Data Repository for spaceflight biology studies: blood, muscle, bone, microbiome, immune data.",
+        "why": "These studies are the evidence for what changes in a body in space, and so for which signals a monitor should watch."
+      },
+      "osdr_meta": {
+        "name": "OSDR dataset details",
+        "what": "Look up one OSDR study by accession (for example OSD-569) in the Biological Data API: organism, mission, assays, release date.",
+        "why": "It shows exactly what a dataset measured before anyone builds on it."
+      },
+      "ntrs": {
+        "name": "NASA Technical Reports (NTRS)",
+        "what": "Search NASA's technical reports and papers, including Human Research Program work.",
+        "why": "It finds the published findings on sleep, vision, radiation and isolation in crews."
+      },
+      "donki": {
+        "name": "DONKI space weather",
+        "what": "NASA's Space Weather Database: solar flares, energetic particle events, geomagnetic storms, coronal mass ejections and notifications.",
+        "why": "Solar particle events are one of the main radiation risks on deep-space trips, so crews need warning."
+      },
+      "eonet": {
+        "name": "EONET Earth events",
+        "what": "Natural events NASA is tracking now: wildfires, volcanoes, dust and haze, storms, floods, temperature extremes.",
+        "why": "Smoke, ash and heat waves affect health on the ground, and show how NASA data serves public health."
+      },
+      "cmr": {
+        "name": "Earthdata CMR: data collections",
+        "what": "Search NASA Earth science data collections, such as TEMPO air-quality data.",
+        "why": "Air quality is a health measure on Earth. The same idea applies to cabin air."
+      },
+      "power": {
+        "name": "POWER temperature and humidity",
+        "what": "Daily air temperature and humidity at any point on Earth, from NASA's POWER project.",
+        "why": "Heat and humidity drive heat stress, an everyday field health risk, and are a reference for habitat comfort."
+      },
+      "images": {
+        "name": "NASA Image and Video Library",
+        "what": "Search NASA's public images and videos.",
+        "why": "It finds public material about astronaut health, exercise and medicine."
+      },
+      "horizons": {
+        "name": "JPL Horizons: Earth-Mars light time",
+        "what": "NASA/JPL's solar-system data service. We ask it where a planet is as seen from Earth, and read off the distance and the one-way light time for the next days.",
+        "why": "It gives the real light delay for today instead of a fixed preset, so the 22 and 44 minute figures can be checked against NASA's own numbers."
+      },
+      "dsn": {
+        "name": "Deep Space Network Now",
+        "what": "NASA's live list of which Deep Space Network dishes are talking to which spacecraft, with signal direction and data rate.",
+        "why": "It shows the real ground link that a delayed, coarse status message would travel through."
+      }
+    },
+    "p": {
+      "term": "Search term",
+      "size": "Results",
+      "accession": "Study accession",
+      "type": "Event type",
+      "days": "Days back",
+      "category": "Event category",
+      "lat": "Latitude",
+      "lon": "Longitude",
+      "body": "Target body"
+    },
+    "choices": {
+      "type": {
+        "notifications": "Notifications",
+        "FLR": "Solar flares",
+        "SEP": "Solar energetic particles",
+        "GST": "Geomagnetic storms",
+        "CME": "Coronal mass ejections",
+        "IPS": "Interplanetary shocks",
+        "RBE": "Radiation belt enhancements",
+        "HSS": "High-speed streams",
+        "MPC": "Magnetopause crossings"
+      },
+      "category": {
+        "wildfires": "Wildfires",
+        "volcanoes": "Volcanoes",
+        "dustHaze": "Dust and haze",
+        "severeStorms": "Severe storms",
+        "floods": "Floods",
+        "drought": "Drought",
+        "tempExtremes": "Temperature extremes",
+        "landslides": "Landslides"
+      },
+      "body": {
+        "mars": "Mars",
+        "venus": "Venus",
+        "jupiter": "Jupiter",
+        "moon": "Moon",
+        "mercury": "Mercury"
+      }
+    },
+    "status": {
+      "live": "Live",
+      "cached": "Cached",
+      "unavailable": "Unavailable"
+    },
+    "msg": {
+      "unreachable": "NASA could not be reached from this server (no internet, or the host is blocked).",
+      "rate_limited": "NASA says too many requests. The shared DEMO_KEY allows only a few calls per hour. Wait, or set NASA_API_KEY.",
+      "bad_key": "NASA rejected the API key.",
+      "offline_mode": "Offline mode: no request was sent.",
+      "unexpected_response": "NASA answered, but not in the expected format.",
+      "http": "NASA answered with HTTP {code}."
+    },
+    "cf": {
+      "bundled": "records bundled with this site",
+      "last": "your last live fetch"
+    },
+    "key": "API key",
+    "fetch": "Fetch from NASA",
+    "fetching": "Asking NASA…",
+    "not_yet": "Nothing fetched yet. Press the button.",
+    "error": "The site could not run this request:",
+    "docs": "NASA documentation",
+    "why": "Why it matters:",
+    "fetched": "Fetched",
+    "cached_from": "Cached from",
+    "total": "{n} matches in total",
+    "no_items": "No items came back.",
+    "source": "Request",
+    "key_demo": "Uses NASA's shared DEMO_KEY, which allows only a few requests per hour. Set the NASA_API_KEY environment variable for more.",
+    "key_custom": "Uses the NASA API key set on this server.",
+    "check_all": "Check all {n} APIs",
+    "check_note": "Runs each API once with its default values.",
+    "col": {
+      "api": "API",
+      "status": "Status",
+      "items": "Items",
+      "ms": "Time (ms)"
+    },
+    "honest": "Only the OSDR and NTRS answers are also bundled with the site, so only those can fall back to cached records. The other APIs show nothing when NASA cannot be reached. Nothing here is medical advice, and radiation or weather data are context, not a diagnosis.",
+    "platforms": {
+      "title": "The four NASA platforms",
+      "intro": "NASA's data and APIs are public, and Space Apps needs no special key. NASA lists four platforms. Each service on this page is grouped under the closest one. Some services live on their own NASA sites.",
+      "used": "Used on this site",
+      "open": "Open",
+      "items": {
+        "open_data": {
+          "name": "NASA Open Data",
+          "what": "Browse publicly available NASA datasets."
+        },
+        "api_portal": {
+          "name": "NASA API Portal",
+          "what": "Explore NASA's APIs and their documentation. An optional free key raises the request limit."
+        },
+        "earthdata": {
+          "name": "NASA Earthdata",
+          "what": "Earth observation, climate and satellite data."
+        },
+        "jpl": {
+          "name": "NASA JPL",
+          "what": "Planetary missions and scientific resources."
+        }
+      }
+    }
+  },
+  "video": {
+    "title": "Watch: the background to the problem",
+    "intro": "Two videos that give context for this project: NASA's astronaut-health research programme and how NASA keeps a Mars mission in touch.",
+    "load": "Load video from YouTube",
+    "play": "Play: {title}",
+    "by": "by",
+    "privacy": "Nothing is requested from YouTube until you press play. Then the video loads from youtube-nocookie.com.",
+    "fallback": "Playback error? Retry or open the video on YouTube:",
+    "retry": "Retry",
+    "open": "Open on YouTube",
+    "note": "Checked on {date} with YouTube's public oEmbed lookup (title and channel). These videos belong to their publishers. They give background. They are not evidence for the detector, and NASA has not endorsed this project. The player needs an internet connection; the rest of the site does not.",
+    "why": {
+      "hrp": "NASA's Human Research Program studies how spaceflight affects the body and mind. It is the research setting for any crew-health monitor, including this one.",
+      "link": "A look at how NASA keeps a Mars mission in contact with Earth. The same one-way delay is what the Earth link and the 3D view model."
+    }
+  },
+  "nasa": {
+    "title": "NASA data and the dataset list",
+    "intro": "Astra Vigil uses three NASA services as references, and the list below shows every dataset and source the project touches. Search it, filter it, open a row for details, or download it.",
+    "services": [
+      {
+        "name": "NASA OSDR",
+        "kind": "osdr",
+        "url": "https://visualization.osdr.nasa.gov/biodata/api/v2/dataset/OSD-575/",
+        "use": "Open Science Data Repository. We cache 9 SpaceX Inspiration4 datasets (OSD-569 to OSD-575, OSD-630, OSD-656) as adjacent context for signals.",
+        "status": "Records bundled for offline use"
+      },
+      {
+        "name": "NASA NTRS",
+        "kind": "ntrs",
+        "url": "https://ntrs.nasa.gov/api/citations/search",
+        "use": "Technical Reports Server. We cache reports on heart rhythm in long flights, sleep, cardiorespiratory change and behavioural health, plus peer-reviewed papers.",
+        "status": "Records bundled for offline use"
+      },
+      {
+        "name": "NASA DONKI",
+        "kind": "donki",
+        "url": "https://api.nasa.gov/DONKI/FLR",
+        "use": "Space weather: flares, geomagnetic storms and coronal mass ejections. Planned as cabin-radiation context.",
+        "status": "Sync code is ready. The cache is empty in this build and needs a free key from api.nasa.gov."
+      }
+    ],
+    "records_title": "Every dataset and source in the project",
+    "filters": {
+      "all": "All",
+      "osdr": "OSDR datasets",
+      "ntrs": "NTRS reports",
+      "paper": "Papers",
+      "other": "Other data"
+    },
+    "retrieved": "Retrieved {date} from NASA's public APIs",
+    "relevance": {
+      "direct": "Direct: same physiological topic",
+      "adjacent": "Adjacent: context only"
+    },
+    "used_for": "Linked to",
+    "open": "Open source page",
+    "how_title": "How it is used",
+    "how": "When an alert fires, the evidence mapper lists the records linked to that signal and direction. They are reading material beside the numbers. They are not proof that a rule is clinically meaningful.",
+    "gap": "Core temperature has no thermoregulation-specific record in the cache, only adjacent inflammation datasets. We say so instead of stretching a match.",
+    "signal_names": {
+      "hr": "Resting heart rate",
+      "hrv": "HRV",
+      "spo2": "SpO2",
+      "sleep_h": "Sleep",
+      "core_temp": "Core temperature",
+      "exercise_min": "Exercise"
+    },
+    "dir": {
+      "high": "higher",
+      "low": "lower"
+    },
+    "count": "{n} datasets and sources",
+    "stat": {
+      "total": "Datasets and sources",
+      "osdr": "OSDR datasets",
+      "ntrs": "NTRS reports",
+      "paper": "Papers",
+      "other": "Other data"
+    },
+    "search": "Search the dataset list",
+    "search_ph": "Search by ID, title or mission",
+    "filter": "Filter by type",
+    "sort": "Sort by",
+    "sorts": {
+      "id": "ID",
+      "date": "Newest first",
+      "kind": "Type"
+    },
+    "cols": {
+      "id": "ID",
+      "title": "Dataset",
+      "type": "Type",
+      "date": "Date",
+      "status": "Status",
+      "link": "Link",
+      "provider": "Provider",
+      "mission": "Mission",
+      "organism": "Organism"
+    },
+    "kinds": {
+      "osdr": "OSDR",
+      "ntrs": "NTRS",
+      "paper": "Paper",
+      "other": "Other"
+    },
+    "none": "Nothing matches. Clear the search or pick another type.",
+    "dl_csv": "Download CSV",
+    "dl_json": "Download JSON"
+  },
+  "console": {
+    "title": "The console, running",
+    "intro": "Screenshots of the offline console from the software package, taken in a headless browser. Everything on these screens is simulated.",
+    "shots": [
+      {
+        "src": "/img/1-console.webp",
+        "alt": "The crew health console with four crew cards, vitals charts and the detector scoreboard",
+        "caption": "Crew console: vitals, baseline bands and the live detector scoreboard."
+      },
+      {
+        "src": "/img/2-alert-nasa-evidence.webp",
+        "alt": "An alert panel with rule text and linked NASA evidence",
+        "caption": "An alert with the rule, the numbers and linked NASA records."
+      },
+      {
+        "src": "/img/3-commander-tier2.webp",
+        "alt": "The commander view showing coarse status only",
+        "caption": "Commander view: coarse status, no raw values."
+      },
+      {
+        "src": "/img/4-nasa-data.webp",
+        "alt": "The NASA data page listing cached records",
+        "caption": "NASA data page: the cached OSDR and NTRS records."
+      }
+    ]
+  },
+  "hardware": {
+    "title": "Hardware",
+    "intro": "The software runs on any laptop. This is the hardware plan around it: what a bench prototype would use, and what a flight design would need to change.",
+    "prototype": {
+      "title": "Bench prototype",
+      "items": [
+        {
+          "name": "Raspberry Pi 5 or Jetson Orin Nano",
+          "role": "Runs the whole stack offline"
+        },
+        {
+          "name": "Polar H10 chest strap",
+          "role": "Heart rate and HRV over Bluetooth"
+        },
+        {
+          "name": "Wrist wearable",
+          "role": "Sleep and SpO2 trends (device not fixed)"
+        },
+        {
+          "name": "ESP32 nodes with SCD40 and BME280",
+          "role": "Cabin CO2, temperature, humidity and pressure over MQTT"
+        },
+        {
+          "name": "Offline router with Mosquitto",
+          "role": "Local network and message broker, no internet"
+        },
+        {
+          "name": "Second laptop",
+          "role": "Plays Earth, to test the delayed link"
+        }
+      ]
+    },
+    "flight": {
+      "title": "Flight concept (not built)",
+      "items": [
+        {
+          "name": "Redundant A/B compute",
+          "role": "One unit can fail without losing the watch"
+        },
+        {
+          "name": "ECC memory and radiation-aware design",
+          "role": "Guards against bit flips in orbit"
+        },
+        {
+          "name": "Read-only network segment",
+          "role": "Sensors can report in, nothing can reach back into the detector"
+        },
+        {
+          "name": "Delay-tolerant networking",
+          "role": "Store-and-forward transport to Earth"
+        }
+      ]
+    },
+    "precedents_title": "Precedents we point to",
+    "precedents": [
+      "HPE Spaceborne Computer-2 ran commercial edge computing on the International Space Station, according to the vendor's press release.",
+      "NASA reported finishing its delay-tolerant networking work in January 2026."
+    ],
+    "note": "We have not tested this hardware together, and we have not independently verified the two precedents beyond their sources."
+  },
+  "tech": {
+    "title": "Technical system description",
+    "intro": "The stack is deliberately small so a team can read all of it in an afternoon.",
+    "stack_title": "Stack",
+    "stack": [
+      {
+        "k": "Backend",
+        "v": "Python 3.10+, FastAPI, Uvicorn, NumPy"
+      },
+      {
+        "k": "Storage",
+        "v": "One SQLite file: audit chain, consent, outbox"
+      },
+      {
+        "k": "Frontend",
+        "v": "Vanilla JavaScript modules, canvas, and a bundled copy of Three.js for the 3D views (galaxy, Solar System, WebXR and phone VR). No framework, no CDN, no remote fonts"
+      },
+      {
+        "k": "Realtime",
+        "v": "WebSocket ticker at 10 Hz; replay speed 1 to 60 rows per second"
+      },
+      {
+        "k": "Explainer",
+        "v": "Template always; optional local model through Ollama behind a guard"
+      },
+      {
+        "k": "Offline",
+        "v": "Verified in a headless browser: only requests to localhost"
+      },
+      {
+        "k": "Tests",
+        "v": "33 automated tests in the console project, plus tests for this website"
+      },
+      {
+        "k": "License",
+        "v": "Apache-2.0 code, OFL fonts"
+      }
+    ],
+    "pipeline_title": "One tick through the system",
+    "pipeline": [
+      "A row of six values arrives for each crew member.",
+      "The detector scores each value against that person's baseline.",
+      "Rules S and M decide whether to raise an alert.",
+      "The explainer writes the text and the evidence mapper adds NASA records.",
+      "The projector builds one view per role and checks consent.",
+      "Coarse status goes to the outbox; every access goes to the audit log.",
+      "The WebSocket pushes the result to the console."
+    ],
+    "endpoints_title": "Console API",
+    "endpoints": [
+      {
+        "m": "GET",
+        "p": "/api/state",
+        "d": "Role-filtered snapshot of the mission"
+      },
+      {
+        "m": "GET",
+        "p": "/api/crew/{id}/series",
+        "d": "Chart series for one crew member (tier 0 only)"
+      },
+      {
+        "m": "GET",
+        "p": "/api/crew/{id}/trend",
+        "d": "Trend direction with consent (tier 1)"
+      },
+      {
+        "m": "POST",
+        "p": "/api/control",
+        "d": "Play, pause, speed, jump to day, next alert"
+      },
+      {
+        "m": "POST",
+        "p": "/api/link",
+        "d": "Set the modelled light-time delay"
+      },
+      {
+        "m": "POST",
+        "p": "/api/consent",
+        "d": "Grant or withdraw consent"
+      },
+      {
+        "m": "GET",
+        "p": "/api/evidence",
+        "d": "NASA records for an alert"
+      },
+      {
+        "m": "GET",
+        "p": "/api/audit",
+        "d": "Audit tail and chain verification"
+      },
+      {
+        "m": "GET",
+        "p": "/api/outbox",
+        "d": "Queued and delivered status messages"
+      },
+      {
+        "m": "GET",
+        "p": "/api/nasa",
+        "d": "Cached NASA catalogue"
+      },
+      {
+        "m": "POST",
+        "p": "/api/nasa/sync",
+        "d": "Refresh the cache when a network exists"
+      },
+      {
+        "m": "GET",
+        "p": "/api/validation",
+        "d": "Live scoreboard against planted events"
+      },
+      {
+        "m": "WS",
+        "p": "/ws",
+        "d": "Live ticks and alerts"
+      }
+    ],
+    "site_endpoints_title": "This website's API",
+    "site_endpoints": [
+      {
+        "m": "GET",
+        "p": "/api/content/{lang}",
+        "d": "All page text in English or Bangla"
+      },
+      {
+        "m": "GET",
+        "p": "/api/hero",
+        "d": "Real detector output for the hero chart"
+      },
+      {
+        "m": "POST",
+        "p": "/api/playground",
+        "d": "Run the detector on a simulated person"
+      },
+      {
+        "m": "GET",
+        "p": "/api/validation",
+        "d": "Monte Carlo results"
+      },
+      {
+        "m": "GET",
+        "p": "/api/nasa",
+        "d": "Cached NASA records"
+      },
+      {
+        "m": "GET",
+        "p": "/api/privacy",
+        "d": "One moment as seen by one role"
+      },
+      {
+        "m": "GET",
+        "p": "/api/link",
+        "d": "Light-time delay model"
+      },
+      {
+        "m": "POST",
+        "p": "/api/link/check",
+        "d": "Outbox schema check"
+      },
+      {
+        "m": "POST",
+        "p": "/api/audit/verify",
+        "d": "Verify a hash chain"
+      }
+    ],
+    "tree_title": "Repository layout",
+    "tree": "astra-vigil/\n  run.py                 launcher\n  backend/astra/\n    compute/detect.py    rules S and M (no model)\n    compute/guard.py     diagnostic-language guard\n    compute/fixture.py   simulated crew, planted events\n    engine.py            mission replay state machine\n    privacy.py           roles, tiers, projection\n    store.py             audit chain, consent, outbox\n    evidence.py          signal to NASA record mapper\n    explain.py           template + optional local model\n    nasa_sync.py         OSDR, NTRS, DONKI clients\n    server.py            REST + WebSocket + static\n  web/                   console (canvas, ES modules)\n  data/                  cached NASA records\n  demo_fixtures/         simulated crew data\n  tests/                 33 tests"
+  },
+  "limits": {
+    "title": "What this is, and what it is not",
+    "intro": "A project about health should be careful with its claims. This is our list.",
+    "is_title": "It is",
+    "is": [
+      "A working software prototype with a deterministic detector",
+      "Offline-first, with all NASA references bundled",
+      "Built and tested on simulated data from four fictional crew",
+      "Open code under Apache-2.0"
+    ],
+    "isnt_title": "It is not",
+    "isnt": [
+      "A medical device, or a source of diagnosis or treatment advice",
+      "Validated on real astronaut or patient data",
+      "Flight-qualified, or tested on the hardware plan",
+      "A predictor of emergencies. It detects change; it does not forecast",
+      "Endorsed by NASA"
+    ],
+    "todo_title": "Not yet verified",
+    "todo": [
+      "The live NASA sync has only been tested with mocked responses, because the build environment could not reach NASA directly.",
+      "The DONKI space-weather cache is empty in this build.",
+      "Detection numbers come from a simple noise model. Real data will be harder.",
+      "The next step is a review by a clinician and a trial with consenting volunteers wearing real sensors."
+    ]
+  },
+  "team": {
+    "title": "Meet the Minds Behind MANTA",
+    "tagline": "Six Minds. One Mission. A Healthier Future in Space.",
+    "intro": "Behind every breakthrough is a team driven by curiosity, innovation, and a shared vision. Meet the people building the future of astronaut health monitoring.",
+    "challenge": "Challenge: Health Monitoring Software for Astronauts, health and life support.",
+    "category": "Category: Health & Life Support.",
+    "photo_alt": "Team MANTA members gathered around a laptop at the NASA Space Apps Challenge 2026.",
+    "photo_caption": "Team MANTA · NASA Space Apps Challenge 2026",
+    "members": [
+      {
+        "name": "Niloy Bhattacharjee",
+        "role": "Team Lead & System Architecture",
+        "image": "/img/team-niloy.png",
+        "alt": "Niloy Bhattacharjee, Team Lead and System Architecture"
+      },
+      {
+        "name": "Tusar Ray",
+        "role": "Frontend Development",
+        "image": "/img/team-tusar.png",
+        "alt": "Tusar Ray, Frontend Development"
+      },
+      {
+        "name": "MD. Taiyab Ur Rahman",
+        "role": "Backend Development",
+        "image": "/img/team-taiyab.png",
+        "alt": "MD. Taiyab Ur Rahman, Backend Development"
+      },
+      {
+        "name": "Dhiraj Dhar Dip",
+        "role": "Software Development",
+        "image": "/img/team-dhiraj.png",
+        "alt": "Dhiraj Dhar Dip, Software Development"
+      },
+      {
+        "name": "Mahadi Hasan Shuvo",
+        "role": "AI & Machine Learning",
+        "image": "/img/team-mahdi.png",
+        "alt": "Mahadi Hasan Shuvo, AI and Machine Learning"
+      },
+      {
+        "name": "Puja Mondal",
+        "role": "Research & Scientific Validation",
+        "image": "/img/team-puja.png",
+        "alt": "Puja Mondal, Research and Scientific Validation"
+      }
+    ],
+    "members_note": "Add teammates in backend/vigilsite/content/en.json and bn.json under team.members.",
+    "open": ""
+  },
+  "footer": {
+    "line": "Astra Vigil 2.0 by Team MANTA. All crew, callsigns and telemetry on this site are fictional and simulated. Not a medical device. Not endorsed by NASA."
+  },
+  "mission": {
+    "tabs_label": "Mission views",
+    "tabs": {
+      "journey": "Journey",
+      "delay": "44 minutes",
+      "crew": "Crew",
+      "compare": "With / without",
+      "ship": "Inside the ship"
+    },
+    "common": {
+      "play": "Play",
+      "pause": "Pause",
+      "restart": "Restart",
+      "min": "min",
+      "h": "h",
+      "d": "d",
+      "s": "s",
+      "day": "Day {d}",
+      "sim": "Simulated data",
+      "drag": "Drag to turn the view, or use the arrow keys. Not to scale: distances are compressed, light times are real.",
+      "no_webgl": "This browser cannot draw the 3D view (WebGL is off). The text and numbers on this page still work.",
+      "loading": "Loading…",
+      "error": "The site could not load this view:",
+      "loading_3d": "Loading the 3D stage…",
+      "speed": "Speed"
+    },
+    "journey": {
+      "title": "The journey, with the five problems",
+      "intro": "A simulated crew leaves the space station, passes Earth and flies to Mars. Move the slider or press Play. At five points on the way, one of the five problems this project answers shows up.",
+      "slider": "Mission day",
+      "route_note": "Schematic route, not a flight plan. The transit is drawn as 259 days, the computed time of a minimum-energy (Hohmann) Earth-Mars transfer; real missions take roughly 6 to 9 months depending on the launch window and the trajectory. Distance from Earth follows the farthest-case light time from NASA's delay-tolerant networking slides (NTRS 20160011483), so it is an upper bound for that moment, not today's distance.",
+      "now": "Now",
+      "dist": "From Earth",
+      "light": "One-way light time",
+      "million_km": "million km",
+      "iss_alt": "about 400 km above Earth",
+      "labels": {
+        "iss": "Space station",
+        "earth": "Earth",
+        "mars": "Mars",
+        "ship": "Crew ship"
+      },
+      "stages": [
+        {
+          "id": "detect",
+          "place": "Space station, low Earth orbit",
+          "light": "one-way light time about 0.001 s",
+          "problem": "Real-time detection",
+          "text": "On the station, ground doctors are a radio call away. The monitor starts here: it learns each person's own 30-day baseline, so that later it can catch a drift on the day it happens rather than in the post-flight report."
+        },
+        {
+          "id": "team",
+          "place": "Early cruise",
+          "light": "one-way light time about a minute",
+          "problem": "Team-level early warning",
+          "text": "Six people share one small cabin, the same air and the same stress. When several of them drift the same way at once, that points to a shared cause, not six separate problems. The detector watches for exactly that."
+        },
+        {
+          "id": "privacy",
+          "place": "Deep space",
+          "light": "one-way light time a few minutes",
+          "problem": "Privacy versus monitoring",
+          "text": "Wearables record everything about a body for months. The ship enforces three tiers: raw numbers stay with their owner, the medical designee sees trend direction only with consent, and the commander and Earth see only a coarse status."
+        },
+        {
+          "id": "delay",
+          "place": "Approaching Mars",
+          "light": "one-way light time heading toward 22 minutes",
+          "problem": "Communication delay",
+          "text": "A question to Earth now needs about 44 minutes for its answer. The ship cannot wait, so it decides on board and sends only a thin status through a store-and-forward outbox."
+        },
+        {
+          "id": "crisis",
+          "place": "Mars",
+          "light": "one-way light time 3 to 22 minutes, depending on where Mars is",
+          "problem": "Crisis prevention",
+          "text": "There is no quick rescue and no quick answer. What helps is an early alert while a change is still small, with the NASA records behind it. We detect early; we never claim to predict an emergency."
+        }
+      ]
+    },
+    "delay": {
+      "title": "Mars to Earth and back: 44 minutes",
+      "intro": "A status packet leaves Mars at the speed of light. At the farthest distance it needs about 22 minutes to reach Earth. Earth's answer needs another 22 minutes to come back. The crew has waited about 44 minutes in total.",
+      "legs": {
+        "out": "Mars to Earth",
+        "back": "Earth to Mars",
+        "total": "Total"
+      },
+      "clock": "Mission clock",
+      "clock_real": "Real time",
+      "phase_out": "Signal travelling to Earth",
+      "phase_back": "Answer travelling back to Mars",
+      "phase_idle": "Press Play to send the packet.",
+      "phase_done": "The answer is back. {rt} minutes have passed on the real clock.",
+      "preset_far": "Mars, farthest (22 min)",
+      "preset_mean": "Mars, average (12.5 min)",
+      "preset_near": "Mars, closest (3 min)",
+      "preset_today": "Today (JPL Horizons)",
+      "owlt": "One-way light time",
+      "rt": "Round trip",
+      "demo_speed": "Demo speed",
+      "demo_note": "The 3D clock runs {x} times faster than real time so you can watch it. The numbers shown are real minutes.",
+      "decide": "During these {rt} minutes the crew has to decide alone. This is why Astra Vigil watches on board.",
+      "live": {
+        "title": "Today's real value",
+        "status": {
+          "live": "Live from NASA",
+          "cached": "Cached copy",
+          "unavailable": "Not available",
+          "computed": "Computed here (estimate)"
+        },
+        "as_of": "As of {date}",
+        "distance": "Distance",
+        "au": "AU",
+        "unavailable": "NASA JPL Horizons could not be reached from this server, so the fixed range from NASA's delay-tolerant networking slides is used.",
+        "source": "Source: NASA/JPL Horizons (quantity 21, one-way light time), fetched by the server. Your browser never contacts NASA.",
+        "range": "NASA's range: {near} to {far} minutes one way",
+        "ask": "Fetch today's value",
+        "computed_note": "NASA JPL Horizons could not be reached, so this value is computed on the server from approximate orbital elements (JPL, Standish). It is an estimate, typically within a few tenths of a minute, and not NASA live data.",
+        "source_computed": "Source: computed on the server from approximate orbital elements (JPL, Standish). It is an estimate, not a NASA value; it switches to JPL Horizons (quantity 21) whenever that answers. Your browser never contacts NASA."
+      },
+      "preset_today_computed": "Today (estimate)"
+    },
+    "crew": {
+      "title": "The crew: six people, all simulated",
+      "intro": "Team MANTA plays the crew. Names and photos are the team's; every number is invented. Move the day slider to watch coarse status change over 600 mission days. Pick one person to see what only that person would see: their own numbers (tier 0).",
+      "slider": "Mission day",
+      "pick": "Pick a crew member",
+      "back": "Back to the status view",
+      "view_status": "Commander and Earth view: coarse status only (tier 2)",
+      "view_own": "{name}'s own view: own numbers (tier 0)",
+      "alert_today": "Alert today",
+      "planted": "Planted change in the simulation",
+      "none_planted": "No planted change for this person",
+      "signals_label": "Signals",
+      "worse": "SD in the worse direction from own baseline",
+      "value": "Value",
+      "note": "Alerts include chance alerts: the detector has a known false-alarm rate. Nobody else's raw numbers are ever returned by the server, only coarse status.",
+      "status": {
+        "learning": "Learning",
+        "normal": "Normal",
+        "watch": "Watch",
+        "alert": "Alert"
+      },
+      "titles": {
+        "Commander": "Commander",
+        "Flight Engineer": "Flight Engineer",
+        "Medical Officer": "Medical Officer",
+        "Mission Scientist": "Mission Scientist",
+        "Pilot": "Pilot",
+        "Payload Specialist": "Payload Specialist"
+      },
+      "signals": {
+        "hr": "Resting heart rate",
+        "hrv": "HRV",
+        "spo2": "SpO2",
+        "sleep_h": "Sleep",
+        "core_temp": "Core temperature",
+        "exercise_min": "Exercise"
+      },
+      "units": {
+        "hr": "bpm",
+        "hrv": "ms",
+        "spo2": "%",
+        "sleep_h": "h",
+        "core_temp": "°C",
+        "exercise_min": "min"
+      },
+      "photo_alt": "Photo of {name}, simulated crew member"
+    },
+    "compare": {
+      "title": "With and without the software",
+      "intro": "The same simulated change in {name}'s {signal}, shown twice. Without software, nobody watches the trend, so it is noticed at the next scheduled health review. With Astra Vigil, the real detector raises the alert on board. The two 3D lanes are drawn to the real numbers.",
+      "lane_with": "With Astra Vigil",
+      "lane_without": "Without software",
+      "events": {
+        "onset": "Change begins",
+        "alert_on_board": "Alert on board",
+        "noticed_at_review": "Noticed at the next health review",
+        "sent": "Status leaves the ship",
+        "earth_has_it": "Earth has it",
+        "answer_back": "Earth's answer is back"
+      },
+      "stats": {
+        "detector": "Detector alert",
+        "after": "{d} day after the change begins",
+        "after_many": "{d} days after the change begins",
+        "gained": "Time gained",
+        "gained_v": "{d} days",
+        "first": "First guidance back on board",
+        "rule": "Rule fired"
+      },
+      "review": "Health review every",
+      "review_unit": "days",
+      "owlt": "Earth to Mars light time",
+      "assump_title": "Assumptions, stated openly",
+      "assump": [
+        "The review interval defaults to 14 days, NASA's ISS Private Psychological Conference interval (NTRS 20170003866). That a change is only noticed at the next review, and that a Mars crew would keep the same interval, are assumptions of this scenario. Change it with the slider.",
+        "With the software, the alert is raised on board, so the crew does not wait for Earth. Earth still receives a coarse status after the light-time delay.",
+        "Light times are the Mars one-way values from NASA's delay-tolerant networking slides (NTRS 20160011483)."
+      ],
+      "tiny": "Earth's answer comes {rt} minutes after the status leaves the ship. On this time axis that is a hairline. The days lost before anyone looks matter far more.",
+      "schematic": "Curves are schematic: how long the change goes unaddressed",
+      "caveat": "The detector is the real one and the data is simulated. One planted event is a demonstration, not a clinical trial.",
+      "time_axis": "Time since the change began",
+      "to_alert": "to alert",
+      "tabs_scale": "Scale: each lane is drawn to the same time axis.",
+      "rule_names": {
+        "hrv_below_personal_baseline": "HRV below the personal baseline",
+        "rule_s": "Rule S",
+        "rule_m": "Rule M"
+      }
+    },
+    "ship": {
+      "title": "Inside the ship: where the software lives",
+      "intro": "A cut-away of the crew ship. Select a module to see what it does, which hardware it uses, which file holds the software, and what is built, planned or only a concept. The moving dots are the real data flow.",
+      "pick": "Select a module",
+      "labels": {
+        "zone": "Where on the ship",
+        "what": "What it does",
+        "hardware": "Hardware",
+        "software": "Software",
+        "file": "File",
+        "status": "State",
+        "note": "Note"
+      },
+      "status": {
+        "built": "Built and tested",
+        "plan": "Bench plan, not tested together",
+        "concept": "Flight concept, not built"
+      },
+      "modules": [
+        {
+          "id": "wear",
+          "name": "Crew quarters: wearables",
+          "zone": "Crew quarters",
+          "status": "plan",
+          "what": "Each crew member would wear a chest strap (heart rate, HRV) and a wrist device (sleep, SpO2 trend) and stream raw numbers to the ship computer.",
+          "hardware": "Polar H10 chest strap. A wrist wearable (device not fixed).",
+          "software": "Today the numbers come from the simulated fixture replay and the CSV import tool, which rejects implausible values. A live Bluetooth reader is planned, not built.",
+          "file": "demo_fixtures/crew.json, tools/import_csv.py",
+          "note": "Raw values stay in this on-board loop and never go to Earth."
+        },
+        {
+          "id": "cabin",
+          "name": "Cabin sensor nodes",
+          "zone": "Cabin walls",
+          "status": "plan",
+          "what": "Small boards report CO2, temperature, humidity and pressure over MQTT on an offline network. They give context for a crew-wide cause such as stale air.",
+          "hardware": "ESP32 boards with an SCD40 (CO2) and a BME280 (temperature, humidity, pressure), plus an offline router running Mosquitto.",
+          "software": "The detector does not use cabin data yet. It is context only.",
+          "file": "hardware plan",
+          "note": "Honest limit: this is a plan. We have not tested the hardware together."
+        },
+        {
+          "id": "core",
+          "name": "Vigil Core: the ship computer",
+          "zone": "Avionics bay",
+          "status": "built",
+          "what": "Reads every reading, keeps each person's own 30-day baseline, runs Rule S and Rule M, links the signal to NASA records, writes the explanation and applies the three privacy tiers. It works with no network.",
+          "hardware": "Bench: Raspberry Pi 5 or Jetson Orin Nano. Flight concept: redundant A/B units with ECC memory, so one unit can fail without losing the watch.",
+          "software": "Mission engine, detector, evidence mapper, explainer with a guard, privacy tiers and the outbox.",
+          "file": "engine.py, compute/detect.py, evidence.py, explain.py, privacy.py, store.py",
+          "note": "The software is built and tested. The flight hardware is a concept."
+        },
+        {
+          "id": "console",
+          "name": "Crew console and medical bay",
+          "zone": "Medical bay",
+          "status": "built",
+          "what": "Shows each person their own numbers and alerts (tier 0), the medical designee the trend direction with consent (tier 1), and the commander the live coarse status of everyone (tier 2).",
+          "hardware": "Any tablet or laptop on the cabin network.",
+          "software": "The web console, with the tier rules enforced on the server.",
+          "file": "web/ (console), privacy.py",
+          "note": "Every access goes into a hash-chained audit log."
+        },
+        {
+          "id": "outbox",
+          "name": "Comms bay: outbox to the dish",
+          "zone": "Comms bay",
+          "status": "built",
+          "what": "Only the day, the time and each crew member's id and coarse status may enter the store-and-forward outbox. It holds each message for the light-time delay and then sends it. Anything with raw vitals is rejected.",
+          "hardware": "Flight concept: delay-tolerant networking over the ship's high-gain antenna.",
+          "software": "The outbox simulation and its payload check.",
+          "file": "store.py, /api/link",
+          "note": "The outbox is built and tested. The radio and the real delay-tolerant network are a concept."
+        },
+        {
+          "id": "earth",
+          "name": "Earth: mission control",
+          "zone": "Ground",
+          "status": "built",
+          "what": "Receives the same coarse status after one-way light time. Ground never receives raw vitals. Through this site's server hub it can also pull NASA data: OSDR, NTRS, DONKI and JPL Horizons.",
+          "hardware": "NASA's Deep Space Network dishes. They are not part of our prototype.",
+          "software": "The NASA data hub and the Earth-Mars link endpoint.",
+          "file": "nasa_hub.py, /api/mars-link",
+          "note": "Our server calls NASA. Your browser never does."
+        }
+      ],
+      "flow_title": "How the data moves",
+      "flow": [
+        {
+          "from": "wear",
+          "to": "core",
+          "label": "Readings"
+        },
+        {
+          "from": "cabin",
+          "to": "core",
+          "label": "Cabin context"
+        },
+        {
+          "from": "core",
+          "to": "console",
+          "label": "Tier 0, 1 and 2 views"
+        },
+        {
+          "from": "core",
+          "to": "outbox",
+          "label": "Coarse status only"
+        },
+        {
+          "from": "outbox",
+          "to": "earth",
+          "label": "After the light-time delay"
+        }
+      ],
+      "how_title": "What the software does, step by step",
+      "how": [
+        {
+          "name": "Read",
+          "text": "A reading arrives from a wearable or from the fixture replay. Implausible values are rejected."
+        },
+        {
+          "name": "Learn",
+          "text": "The detector compares it with that person's own 30-day baseline. The first 14 days only learn."
+        },
+        {
+          "name": "Check",
+          "text": "Rule S and Rule M look for a shift, with the exact numbers behind it. No machine learning, no diagnosis."
+        },
+        {
+          "name": "Explain",
+          "text": "A template writes the explanation and links the signal to NASA records, marked direct or adjacent."
+        },
+        {
+          "name": "Filter",
+          "text": "The three privacy tiers decide who sees what. Raw numbers stay with their owner."
+        },
+        {
+          "name": "Queue",
+          "text": "Only a coarse status enters the outbox, which holds it for the light-time delay."
+        },
+        {
+          "name": "Send",
+          "text": "Earth gets the status after one-way light time. Nothing in the ship waits for that."
+        }
+      ],
+      "added_title": "What the software adds to the ship",
+      "added": "Without it, the ship only logs numbers and a doctor reads them later, after Earth has answered. With it, the ship watches every person every day, explains each alert, and tells Earth only what Earth is allowed to know.",
+      "legend": {
+        "flow": "Moving dots show the data flow",
+        "sel": "Selected module"
+      }
+    }
+  },
+  "updates": {
+    "title": "What changed in this update",
+    "intro": "This page now shows where the software sits inside the ship, how it is different from before, and which NASA services it connects to. Here is the full list, from the first console to this release.",
+    "versions_title": "Version history",
+    "versions": [
+      {
+        "v": "v2.4",
+        "name": "Astra Vigil 2.0 console",
+        "items": [
+          "Four fictional crew and the Rule S and Rule M detector on each person's own 30-day baseline.",
+          "Three privacy tiers and a hash-chained audit log.",
+          "Store-and-forward outbox for the Earth link."
+        ]
+      },
+      {
+        "v": "v3.0",
+        "name": "Six crew and planning",
+        "items": [
+          "Six crew members, a hazard ring, an automatic plan and a report."
+        ]
+      },
+      {
+        "v": "v3.1",
+        "name": "More indicators, more security",
+        "items": [
+          "Ten health indicators in the console.",
+          "Security hardening of the console."
+        ]
+      },
+      {
+        "v": "v3.2",
+        "name": "Real NASA data in the console",
+        "items": [
+          "A real NASA data part, a daily chart and six crew photos."
+        ]
+      },
+      {
+        "v": "Website, this release",
+        "name": "Mission 3D theatre",
+        "items": [
+          "The 3D section is now five views: the journey from the space station to Mars with the five problems, the 44-minute round trip, the crew, with and without the software, and the inside of the ship.",
+          "The website crew is now the six Team MANTA members, with photos.",
+          "Ten NASA services instead of eight: JPL Horizons and Deep Space Network Now were added, and DONKI got a fallback address.",
+          "New server endpoints: /api/mars-link, /api/crew/timeline, /api/crew/day and /api/compare."
+        ]
+      }
+    ],
+    "table_title": "Before and now",
+    "cols": {
+      "what": "Part",
+      "before": "Before",
+      "now": "Now"
+    },
+    "rows": [
+      {
+        "what": "3D section",
+        "before": "One Earth-Mars slider with a signal packet.",
+        "now": "Five views on one stage: journey, 44 minutes, crew, with / without, inside the ship."
+      },
+      {
+        "what": "Crew in the demos",
+        "before": "Four fictional crew.",
+        "now": "Six crew, the Team MANTA members, with photos. All vitals are still simulated."
+      },
+      {
+        "what": "With / without software",
+        "before": "Not shown.",
+        "now": "Computed by the real detector on the simulated crew. The review interval is an assumption."
+      },
+      {
+        "what": "NASA services",
+        "before": "Eight.",
+        "now": "Ten: JPL Horizons (real Earth-Mars light time) and Deep Space Network Now were added."
+      },
+      {
+        "what": "Server endpoints",
+        "before": "/api/link and the others.",
+        "now": "Plus /api/mars-link, /api/crew/timeline, /api/crew/day and /api/compare."
+      },
+      {
+        "what": "Where the software sits",
+        "before": "Described in the architecture diagram.",
+        "now": "Shown module by module inside the ship, with hardware, file and state."
+      }
+    ],
+    "honest_title": "What is still not proven",
+    "honest": [
+      "All crew data is simulated. Nothing here has been tested on real astronauts.",
+      "The NASA connections are tested against mock answers. The server could not reach NASA while this release was built, so run a live check from the NASA APIs section.",
+      "The Deep Space Network feed address and the new DONKI address are unverified.",
+      "The 22 and 44 minute figures are for Mars at its farthest. Today's live value will differ.",
+      "The review interval in the with / without comparison is an assumption."
+    ]
+  }
+}

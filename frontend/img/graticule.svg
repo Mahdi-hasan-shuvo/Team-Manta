@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1600" viewBox="0 0 1600 1600" fill="none" stroke="#8FA0FF" stroke-width="1">
+  <g opacity=".10">
+    <circle cx="1400" cy="200" r="160"/><circle cx="1400" cy="200" r="320"/><circle cx="1400" cy="200" r="480"/>
+    <circle cx="1400" cy="200" r="640"/><circle cx="1400" cy="200" r="800"/><circle cx="1400" cy="200" r="960"/>
+    <circle cx="1400" cy="200" r="1120"/><circle cx="1400" cy="200" r="1280"/><circle cx="1400" cy="200" r="1440"/>
+    <path d="M1400 200L0 200M1400 200L0 700M1400 200L200 1400M1400 200L900 1600M1400 200L1400 1600M1400 200L400 -100M1400 200L900 -200"/>
+  </g>
+  <g opacity=".22" stroke-width="1.4" stroke-linecap="round">
+    <path d="M1010 330L1120 290L1210 370L1330 320L1420 400"/>
+    <path d="M1000 1100L1120 1040L1210 1130L1330 1070"/>
+  </g>
+  <g fill="#8FA0FF" stroke="none" opacity=".35">
+    <circle cx="1010" cy="330" r="3"/><circle cx="1120" cy="290" r="2.4"/><circle cx="1210" cy="370" r="3.4"/><circle cx="1330" cy="320" r="2.4"/><circle cx="1420" cy="400" r="3"/>
+    <circle cx="1000" cy="1100" r="3"/><circle cx="1120" cy="1040" r="2.4"/><circle cx="1210" cy="1130" r="3.4"/><circle cx="1330" cy="1070" r="2.4"/>
+  </g>
+</svg>

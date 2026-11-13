@@ -1,0 +1,23 @@
+{
+ "meta": {
+  "verified": "2026-10-27",
+  "how": "Each video ID was checked with YouTube's public oEmbed endpoint on the date above (title and channel returned). Videos are third-party content and are NOT part of the detector's evidence.",
+  "player": "youtube-nocookie.com, loaded only after the visitor presses play"
+ },
+ "items": [
+  {
+   "id": "f6KyEhHyLeQ",
+   "title": "Human Research Program (HRP) Overview",
+   "channel": "NASA Video",
+   "channel_url": "https://www.youtube.com/@NASAgovVideo",
+   "topic": "hrp"
+  },
+  {
+   "id": "eH6W39iE5bs",
+   "title": "Earth to Mars: How NASA Keeps Curiosity Connected (Mars Report)",
+   "channel": "NASA Jet Propulsion Laboratory",
+   "channel_url": "https://www.youtube.com/@NASAJPL",
+   "topic": "link"
+  }
+ ]
+}

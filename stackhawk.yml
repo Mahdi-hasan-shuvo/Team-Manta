@@ -1,0 +1,23 @@
+# StackHawk HawkScan config for the Team MANTA showcase site (not run yet: no StackHawk API key in the build session).
+# 1) Create an app at app.stackhawk.com and put its id below (or export APP_ID).  2) export HAWK_API_KEY=...
+# 3) python run.py --port 8080      4) hawk scan stackhawk.yml
+# The API has no OpenAPI document (docs are switched off on purpose), so the scan crawls from the seed paths.
+app:
+  applicationId: ${APP_ID:REPLACE-WITH-YOUR-STACKHAWK-APP-ID}
+  env: ${APP_ENV:Development}
+  host: ${APP_HOST:http://localhost:8080}
+  excludePaths:
+    - "/vendor/.*"          # bundled Three.js, not our code
+hawk:
+  spider:
+    base: true
+    ajax: true              # the front end is a client-rendered SPA
+    maxDurationMinutes: 10
+    seedPaths:
+      - /
+      - /api/health
+      - /api/content/en
+      - /api/mars-link
+      - /api/crew/timeline
+      - /api/compare
+      - /api/hub
